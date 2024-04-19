@@ -1,18 +1,33 @@
-import ECommerce from "@/components/Dashboard/E-commerce";
 import { Metadata } from "next";
-import DefaultLayout from "./components/Layouts/DefaultLayout";
+import Link from "next/link";
+import Image from "next/image";
+import Navbar from "./components/Navbar/Navbar";
+import {
+  LoginLink,
+  LogoutLink,
+  RegisterLink,
+} from "@kinde-oss/kinde-auth-nextjs/components";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export const metadata: Metadata = {
-  title: "Inicio home",
+  title: "U Market",
   description: "Hola",
 };
 
-export default function Home() {
+export default async function Home() {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
   return (
     <>
-      <DefaultLayout>
-        <div>Hola soy el inicio de la pagina principal</div>
-      </DefaultLayout>
+      <Navbar />
+      {user ? (
+        <LogoutLink className="mr-4 w-full">Logout</LogoutLink>
+      ) : (
+        <>
+          <LoginLink className="mr-4 w-full">Login</LoginLink>
+          <RegisterLink className="w-full ">Register</RegisterLink>
+        </>
+      )}
     </>
   );
 }
