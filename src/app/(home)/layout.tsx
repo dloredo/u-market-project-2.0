@@ -1,31 +1,45 @@
-"use client";
 import "jsvectormap/dist/css/jsvectormap.css";
 import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";
-import React, { useEffect, useState } from "react";
+import React, { Suspense } from "react";
 import Loader from "@/components/common/Loader";
+import { redirect } from "next/navigation";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import prisma from "@/lib/db";
 
-export default function RootLayout({
+async function getData(userId: string) {
+  const data = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+  });
+
+  return data;
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
 
-  // const pathname = usePathname();
-
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+  const data = await getData(user?.id);
 
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        <div className="dark:bg-boxdark-2 dark:text-bodydark">
-          {loading ? <Loader /> : children}
-        </div>
+        {data?.role === "user" ? (
+          <div className="dark:bg-boxdark-2 dark:text-bodydark">
+            <Suspense fallback={<Loader />}>{children}</Suspense>
+          </div>
+        ) : data?.role === "admin" ? (
+          redirect("/dashboard")
+        ) : (
+          redirect("/business")
+        )}
       </body>
     </html>
   );

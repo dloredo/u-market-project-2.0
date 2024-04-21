@@ -1,13 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { redirect } from "next/navigation";
+import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs";
 
-const DropdownUser = () => {
+const DropdownUser = ({
+  id,
+  name,
+  email,
+  image,
+}: {
+  id: string;
+  name: string;
+  email: string;
+  image: string;
+}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
-
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -44,9 +54,9 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {name}
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">{email}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -161,7 +171,7 @@ const DropdownUser = () => {
             </Link>
           </li>
         </ul>
-        <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+        <LogoutLink className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
           <svg
             className="fill-current"
             width="22"
@@ -180,7 +190,7 @@ const DropdownUser = () => {
             />
           </svg>
           Log Out
-        </button>
+        </LogoutLink>
       </div>
       {/* <!-- Dropdown End --> */}
     </div>
